@@ -2,12 +2,12 @@
 
 [X] Login com Google: O usuário pode se autenticar no aplicativo usando sua conta do Google.
 [X] Criação de Empréstimo: O usuário pode registrar um novo empréstimo, informando detalhes como nome do item, descrição.
-[] Compartilhamento de Link: O usuário pode gerar e compartilhar um link para que o destinatário veja os detalhes do empréstimo.
-[] Acompanhamento de Empréstimo: O usuário que emprestou o item pode visualizar o status do empréstimo e acompanhar as atualizações (ex.: item foi entregue ou não).
-[] Login para Confirmação de Empréstimo: O destinatário do item pode acessar uma tela específica para confirmar que está pegando o item emprestado, fazendo login na plataforma.
-[] Confirmação de Item Emprestado: O destinatário pode adicionar o item à sua lista como "item emprestado" após confirmar que o pegou.
-[] Exibição como Vitrine: Após o destinatário confirmar que pegou o item emprestado, ele será exibido para os outros usuários apenas como "vitrine" (sem ações de empréstimo disponíveis).
-[] Marcar Item como Devolvido: O usuário que emprestou pode marcar que o item foi devolvido e o empréstimo está concluído.
+[X] Compartilhamento de Link: O usuário pode gerar e compartilhar um link para que o destinatário veja os detalhes do empréstimo.
+[X] Acompanhamento de Empréstimo: O usuário que emprestou o item pode visualizar o status do empréstimo e acompanhar as atualizações (ex.: item foi entregue ou não).
+[X] Login para Confirmação de Empréstimo: O destinatário do item pode acessar uma tela específica para confirmar que está pegando o item emprestado, fazendo login na plataforma.
+[X] Confirmação de Item Emprestado: O destinatário pode adicionar o item à sua lista como "item emprestado" após confirmar que o pegou.
+[X] Exibição como Vitrine: Após o destinatário confirmar que pegou o item emprestado, ele será exibido para os outros usuários apenas como "vitrine" (sem ações de empréstimo disponíveis).
+[X] Marcar Item como Devolvido: O usuário que emprestou pode marcar que o item foi devolvido e o empréstimo está concluído.
 [] Confirmação de Devolução: O destinatário pode notificar que devolveu o item ao dono.
 
 # Funcionalidades de Notificações:

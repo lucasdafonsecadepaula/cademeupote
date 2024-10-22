@@ -22,6 +22,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: 'CadêMeuPote?',
   description: 'O melhor jeito para lembrar alguem a devolver o seus potes!',
+  keywords: 'Empréstimo, pote, aplicativo para mães',
+  openGraph: {
+    images: '/images/og-image.png',
+  },
+  twitter: {
+    images: '/images/twitter-image.png',
+  },
 }
 
 export default function RootLayout({

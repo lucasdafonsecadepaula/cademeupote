@@ -1,24 +1,29 @@
 'use client'
-import { ArrowLeft, Trash } from 'lucide-react'
+import { ArrowLeft, LoaderPinwheel, Trash } from 'lucide-react'
 import { Button } from './ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { createSupabaseClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
 
 export function MarkAsDeliveredButton({ id }: { id: string }) {
   const supabase = createSupabaseClient()
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isPending, startTransition] = useTransition()
+  const router = useRouter()
 
-  async function handleConfirmDelivere() {
-    await supabase
-      .from('borrowed_items')
-      .update({
-        has_returned: true,
-      })
-      .eq('id', id)
-      .single()
-    setIsModalOpen(false)
-    window.location.reload()
+  function handleConfirmDelivere() {
+    startTransition(async () => {
+      await supabase
+        .from('borrowed_items')
+        .update({
+          has_returned: true,
+        })
+        .eq('id', id)
+        .single()
+      setIsModalOpen(false)
+      router.refresh()
+    })
   }
 
   const changeModalStatus = (status: boolean) => () => {
@@ -35,7 +40,7 @@ export function MarkAsDeliveredButton({ id }: { id: string }) {
         <DialogContent>
           <DialogHeader className="text-left">
             <DialogTitle>
-              Deseja marcar esse emprestimo como entregue?
+              Deseja marcar esse empréstimo como entregue?
             </DialogTitle>
           </DialogHeader>
           <div className="flex py-6 gap-4">
@@ -51,9 +56,19 @@ export function MarkAsDeliveredButton({ id }: { id: string }) {
               onClick={handleConfirmDelivere}
               variant="destructive"
               className="flex-grow"
+              disabled={isPending}
             >
-              <Trash />
-              Confirmar
+              {isPending ? (
+                <>
+                  <LoaderPinwheel className="animate-spin" />
+                  Confirmando
+                </>
+              ) : (
+                <>
+                  <Trash />
+                  Confirmar
+                </>
+              )}
             </Button>
           </div>
         </DialogContent>

@@ -58,6 +58,8 @@ export default async function Page({
   const userName = user?.user_metadata?.name as string | undefined
   const userImageUrl = user?.user_metadata?.avatar_url as string | undefined
 
+  console.log('aki', dataItem.sent_to)
+
   return (
     <div className="flex flex-col min-h-screen">
       <TopBar />
@@ -66,12 +68,14 @@ export default async function Page({
           <BorrowedCard
             {...cardProps}
             actionElement={
-              <AcceptButton
-                userId={user?.id}
-                token={token}
-                userName={userName}
-                userImageUrl={userImageUrl}
-              />
+              !dataItem.sent_to ? (
+                <AcceptButton
+                  userId={user?.id}
+                  token={token}
+                  userName={userName}
+                  userImageUrl={userImageUrl}
+                />
+              ) : null
             }
           />
         </div>

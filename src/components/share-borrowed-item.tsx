@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from './ui/dialog'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Input } from './ui/input'
 import Image from 'next/image'
 import whatsappIcon from '@/assets/svgs/whatsapp.svg'
@@ -16,7 +16,11 @@ import whatsappIcon from '@/assets/svgs/whatsapp.svg'
 export function ShareBorrowedItem({ id }: { id: string }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
-  const sharedLink = `${window.origin}/confirmar-emprestimo?token=${id}`
+  const [sharedLink, setSharedLink] = useState('')
+
+  useEffect(() => {
+    setSharedLink(`${window.origin}/confirmar-emprestimo?token=${id}`)
+  }, [id])
 
   const changeModalStatus = (status: boolean) => () => {
     setIsModalOpen(status)
@@ -48,12 +52,10 @@ export function ShareBorrowedItem({ id }: { id: string }) {
       >
         <DialogContent>
           <DialogHeader className="text-left">
-            <DialogTitle>
-              Compartilhe o link para quem pegou emprestado
-            </DialogTitle>
+            <DialogTitle>Link para compatilhar</DialogTitle>
             <DialogDescription>
-              Último passo, compartilhe o link abaixo apenas com a pessoa que
-              pegou emprestado.
+              Qualquer pessoa com esse link terá acesso as informações do
+              empréstimo
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -62,7 +64,7 @@ export function ShareBorrowedItem({ id }: { id: string }) {
               <Button
                 size="icon"
                 variant="outline"
-                onClick={() => copyToClipboard(id)}
+                onClick={() => copyToClipboard(sharedLink)}
               >
                 {isCopied ? (
                   <Check className="h-4 w-4" />

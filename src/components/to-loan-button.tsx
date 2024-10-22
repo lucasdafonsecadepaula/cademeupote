@@ -23,6 +23,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import Image from 'next/image'
 import whatsappIcon from '@/assets/svgs/whatsapp.svg'
+
 import { ChangeEvent, useRef, useState, useTransition } from 'react'
 import { convertBlobUrlToFile } from '@/utils'
 import { uploadImage } from '@/lib/supabase/storage/client'
@@ -47,7 +48,7 @@ export function ToLoanButton() {
     e.preventDefault()
     startTransition(async () => {
       const { name, description, image, isPublic } = newProduct
-      if (!name || !description || !image || !isPublic) return
+      if (!name || !description || !image) return
       const {
         data: { user },
       } = await supabase.auth.getUser()
@@ -120,7 +121,7 @@ export function ToLoanButton() {
         {step === 1 ? (
           <>
             <DialogHeader>
-              <DialogTitle>Dados do emprestimo</DialogTitle>
+              <DialogTitle>Dados do Empréstimo</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleCreateProduct} className="space-y-4">
               <div>
@@ -164,7 +165,7 @@ export function ToLoanButton() {
                 <Label htmlFor="name">Nome</Label>
                 <Input
                   id="name"
-                  placeholder="Ex: Pote"
+                  placeholder="Ex: Pote, panela ou livro..."
                   value={newProduct.name}
                   onChange={(e) =>
                     setNewProduct({ ...newProduct, name: e.target.value })
@@ -176,7 +177,7 @@ export function ToLoanButton() {
                 <Label htmlFor="description">Descrição</Label>
                 <Textarea
                   id="description"
-                  placeholder="Ex: Presente de fulano"
+                  placeholder="Coloque uma descrição do item e o nome da pessoa que você vai emprestar."
                   value={newProduct.description}
                   onChange={(e) =>
                     setNewProduct({
@@ -208,10 +209,10 @@ export function ToLoanButton() {
                   {isPending ? (
                     <>
                       <LoaderPinwheel className="animate-spin" />
-                      Criando emprestimo...
+                      Criando empréstimo
                     </>
                   ) : (
-                    'Criar emprestimo'
+                    'Criar empréstimo'
                   )}
                 </Button>
               </div>

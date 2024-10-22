@@ -108,7 +108,7 @@ export default async function Page() {
       <main>
         <div className="min-h-screen bg-background p-4 md:p-6">
           <div className="max-w-4xl mx-auto space-y-4">
-            <h1 className="text-2xl font-bold text-center mb-6">Emprestimos</h1>
+            <h1 className="text-2xl font-bold text-center mb-6">Empréstimo</h1>
             <ScrollAreaWithBorrowedItemsCard items={newItems} />
             <ToLoanButton />
           </div>

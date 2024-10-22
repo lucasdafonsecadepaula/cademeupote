@@ -22,7 +22,7 @@ function ShowCreatedDate({
   let loanText = ''
   if (iLended) loanText = 'Emprestou no dia: '
   if (iBorrowed) loanText = 'Pegou emprestado no dia:'
-  if (!iLended && !iBorrowed) loanText = 'Emprestimo ocorreu no dia:'
+  if (!iLended && !iBorrowed) loanText = 'Empréstimo ocorreu no dia:'
 
   const formattedDate = format(new Date(createdAt), 'dd/MM/yyyy')
 
@@ -62,8 +62,17 @@ function BorrowedTextStatus({
   iBorrowed: boolean
   createdAt: string
 }) {
+  if (!borrowerName && iLended) {
+    return (
+      <p className="text-sm font-bold">
+        Quem recebeu o item ainda não confirmou no link. Por favor, reenvie o
+        link para que possamos notificá-la, se necessário.
+      </p>
+    )
+  }
+
   if (!borrowerName) {
-    return <p className="text-sm font-bold">Você aceita o emprestimo de: </p>
+    return <p className="text-sm font-bold">Você aceita o empréstimo de: </p>
   }
 
   const distanceToNowString = formatDistanceToNow(new Date(createdAt), {
