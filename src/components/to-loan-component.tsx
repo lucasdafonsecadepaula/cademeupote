@@ -134,7 +134,6 @@ export function ToLoanComponent() {
                   id="image"
                   type="file"
                   multiple={false}
-                  capture="environment"
                   accept="image/*"
                   onChange={handleImageChange}
                   className="hidden"
