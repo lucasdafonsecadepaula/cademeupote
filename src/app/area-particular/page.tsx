@@ -1,3 +1,4 @@
+import NotificationPermissionCard from '@/components/notification-permission-card'
 import { ScrollAreaWithBorrowedItemsCard } from '@/components/scroll-area-with-borrowed-itens-card'
 import { ToLoanButton } from '@/components/to-loan-button'
 import { TopBar } from '@/components/top-bar'
@@ -114,6 +115,7 @@ export default async function Page() {
           </div>
         </div>
       </main>
+      <NotificationPermissionCard />
     </div>
   )
 }

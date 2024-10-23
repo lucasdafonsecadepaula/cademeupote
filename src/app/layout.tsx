@@ -1,7 +1,6 @@
 import { Poppins } from 'next/font/google'
 import type { Metadata } from 'next'
 import './globals.css'
-import NotificationPermissionCard from '@/components/notification-permission-card'
 
 const poppinsFont = Poppins({
   subsets: ['latin'],
@@ -43,7 +42,6 @@ export default function RootLayout({
         className={`${poppinsFont.variable} antialiased font-[family-name:var(--font-poppins)]`}
       >
         {children}
-        <NotificationPermissionCard />
       </body>
     </html>
   )
