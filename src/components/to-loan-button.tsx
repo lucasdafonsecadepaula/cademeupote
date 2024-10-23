@@ -149,6 +149,7 @@ export function ToLoanButton() {
                     type="file"
                     multiple={false}
                     accept="image/*"
+                    capture="environment"
                     onChange={handleImageChange}
                     className="hidden"
                   />

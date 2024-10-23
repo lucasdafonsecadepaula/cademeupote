@@ -1,7 +1,7 @@
 import { TopBar } from '@/components/top-bar'
 import { createSupabaseServer } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { TableBorrowedItemsProps } from '../area-particular/page'
+import { TableBorrowedItemsProps } from '../emprestimos/page'
 import { AcceptButton } from './AcceptButton'
 import { BorrowedCard } from '@/components/borrowed-card'
 
