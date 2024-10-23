@@ -60,7 +60,7 @@ function checkIfWasCreated3DaysAgo(createdAt: string) {
 
 export const dynamic = 'force-dynamic'
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<void | Response> {
   try {
     const authHeader = request.headers.get('authorization')
 
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
       .select('id, sent_to, created_at, lender_name, name')
       .eq('has_returned', false)
 
-    if (itemsError) throw new Error('')
+    if (itemsError) throw new Error(itemsError.message)
 
     const items = ItemSchema.parse(itemsNotParsed)
     const itemIds = items.filter((item) => item.sent_to).map((item) => item.id)
@@ -132,9 +132,7 @@ export async function GET(request: NextRequest) {
         .select('*')
         .in('id', userIdsNeedingNotification)
 
-    if (subscriptionsError) {
-      return { success: false, message: subscriptionsError.message }
-    }
+    if (subscriptionsError) throw new Error(subscriptionsError.message)
 
     const subscriptions = SubscriptionSchema.parse(subscriptionsNotParsed)
 

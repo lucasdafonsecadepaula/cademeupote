@@ -1,4 +1,4 @@
-import { Poppins, Roboto } from 'next/font/google'
+import { Poppins } from 'next/font/google'
 import type { Metadata } from 'next'
 import './globals.css'
 import NotificationPermissionCard from '@/components/notification-permission-card'
@@ -9,11 +9,11 @@ const poppinsFont = Poppins({
   variable: '--font-poppins',
 })
 
-const robotoFont = Roboto({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-  variable: '--font-roboto',
-})
+// const robotoFont = Roboto({
+//   subsets: ['latin'],
+//   weight: ['400', '500', '700'],
+//   variable: '--font-roboto',
+// })
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -40,7 +40,7 @@ export default function RootLayout({
   return (
     <html lang="pt">
       <body
-        className={`${poppinsFont.variable} ${robotoFont.variable} antialiased font-[family-name:var(--font-poppins)]`}
+        className={`${poppinsFont.variable} antialiased font-[family-name:var(--font-poppins)]`}
       >
         {children}
         <NotificationPermissionCard />
