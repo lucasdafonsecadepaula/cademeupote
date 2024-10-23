@@ -83,6 +83,7 @@ export function ToLoanComponent() {
   }
 
   function handleImageChange(e: ChangeEvent<HTMLInputElement>) {
+    e.preventDefault()
     if (!e.target.files?.[0]) return
     const newImageFile = e.target.files[0]
     const newImageObjectURL = URL.createObjectURL(newImageFile)
