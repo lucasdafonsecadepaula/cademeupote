@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import type { NextRequest } from 'next/server'
 import webpush from 'web-push'
 import { z } from 'zod'
 
@@ -39,9 +40,12 @@ const PushSubscriptionSchema = z.object({
   }),
 })
 
+const defaultUrl = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : 'mailto:example@yourdomain.org'
+
 webpush.setVapidDetails(
-  // 'http://localhost:3000',
-  'mailto:example@yourdomain.org',
+  defaultUrl,
   process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
   process.env.VAPID_PRIVATE_KEY!,
 )
@@ -54,11 +58,14 @@ function checkIfWasCreated3DaysAgo(createdAt: string) {
   return diffInDays >= 3
 }
 
-export async function POST(request: Request) {
+export const dynamic = 'force-dynamic'
+
+export async function GET(request: NextRequest) {
   try {
-    const res = await request.json()
-    if (res.secret !== 'Pyg999amEsz9dgyLYNyBh72OTVtn7aG1ymvkd11dDSjSK0swwb') {
-      throw new Error('')
+    const authHeader = request.headers.get('authorization')
+
+    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      throw new Error('Unauthorized')
     }
 
     const supabaseAdmin = createClient(

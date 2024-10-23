@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { subscribeUser, unsubscribeUser, sendNotification } from '@/app/actions'
+import { subscribeUser, unsubscribeUser } from '@/app/actions'
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
@@ -63,7 +63,6 @@ function PushNotificationManager() {
 
   async function sendTestNotification() {
     if (subscription) {
-      await sendNotification(message)
       setMessage('')
     }
   }
@@ -99,7 +98,7 @@ function PushNotificationManager() {
 
 function InstallPrompt() {
   const [isIOS, setIsIOS] = useState(false)
-  const [isStandalone, setIsStandalone] = useState(false)
+  const [, setIsStandalone] = useState(false)
 
   useEffect(() => {
     setIsIOS(
@@ -109,10 +108,6 @@ function InstallPrompt() {
 
     setIsStandalone(window.matchMedia('(display-mode: standalone)').matches)
   }, [])
-
-  if (isStandalone) {
-    return null // Don't show install button if already installed
-  }
 
   return (
     <div>

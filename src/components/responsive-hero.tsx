@@ -4,14 +4,19 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import momImage from '@/assets/imgs/mom.jpg'
 import { motion } from 'framer-motion'
+import { createSupabaseClient } from '@/lib/supabase/client'
 
-interface ResponsiveHeroComponentProps {
-  handleLogin?: () => void
-}
+export function ResponsiveHeroComponent() {
+  const supabase = createSupabaseClient()
 
-export function ResponsiveHeroComponent({
-  handleLogin,
-}: ResponsiveHeroComponentProps) {
+  const handleLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${location.origin}/auth/callback`,
+      },
+    })
+  }
   return (
     <section className="flex-grow flex justify-center w-full py-12 md:py-24 lg:py-32">
       <div className="w-full max-w-[1600px] container px-4 md:px-6">
