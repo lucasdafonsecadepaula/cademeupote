@@ -1,9 +1,9 @@
 import NotificationPermissionCard from '@/components/notification-permission-card'
 import { ScrollAreaWithBorrowedItemsCard } from '@/components/scroll-area-with-borrowed-itens-card'
-import { ToLoanButton } from '@/components/to-loan-button'
 import { TopBar } from '@/components/top-bar'
 import { createSupabaseServer } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { ToLoanClientButton } from './clientButton'
 
 export interface TableBorrowedItemsProps {
   id: string
@@ -111,7 +111,7 @@ export default async function Page() {
           <div className="max-w-4xl mx-auto space-y-4">
             <h1 className="text-2xl font-bold text-center mb-6">Empréstimo</h1>
             <ScrollAreaWithBorrowedItemsCard items={newItems} />
-            <ToLoanButton />
+            <ToLoanClientButton />
           </div>
         </div>
       </main>

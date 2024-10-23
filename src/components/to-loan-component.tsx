@@ -2,11 +2,11 @@
 
 import {
   Copy,
-  Plus,
   Upload,
   ImagePlus,
   Check,
   LoaderPinwheel,
+  ArrowLeft,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -15,17 +15,18 @@ import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import Image from 'next/image'
 import whatsappIcon from '@/assets/svgs/whatsapp.svg'
-
 import { ChangeEvent, useRef, useState, useTransition } from 'react'
 import { convertBlobUrlToFile } from '@/utils'
 import { uploadImage } from '@/lib/supabase/storage/client'
 import { createSupabaseClient } from '@/lib/supabase/client'
 import { BUCKET_NAME } from '@/config'
+import { useRouter } from 'next/navigation'
 
-export function ToLoanButton() {
+export function ToLoanComponent() {
   const supabase = createSupabaseClient()
+  const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [step, setStep] = useState(0)
+  const [step, setStep] = useState(1)
   const [copied, setIsCopied] = useState(false)
   const [newProduct, setNewProduct] = useState({
     name: '',
@@ -102,14 +103,7 @@ export function ToLoanButton() {
   }
 
   return (
-    <div className="">
-      {step === 0 ? (
-        <Button className="w-full" onClick={() => setStep(1)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Emprestar
-        </Button>
-      ) : null}
-
+    <div>
       {step === 1 ? (
         <>
           <div>
@@ -201,8 +195,9 @@ export function ToLoanButton() {
                 variant="outline"
                 className=""
                 disabled={isPending}
-                onClick={() => setStep(0)}
+                onClick={() => router.push('/emprestimos')}
               >
+                <ArrowLeft />
                 Voltar
               </Button>
               <Button className="" type="submit" disabled={isPending}>
@@ -223,7 +218,9 @@ export function ToLoanButton() {
       {step === 2 ? (
         <>
           <div className="text-left">
-            <h4>Compartilhe o link para quem pegou emprestado</h4>
+            <h4 className="text-lg pb-8">
+              Compartilhe o link para quem pegou emprestado
+            </h4>
             <p>
               Último passo, compartilhe o link abaixo apenas com a pessoa que
               pegou emprestado.
@@ -254,6 +251,15 @@ export function ToLoanButton() {
                   width={16}
                 />
                 Compartilhe com Whatsapp
+              </Button>
+              <Button
+                variant="outline"
+                className=""
+                disabled={isPending}
+                onClick={() => router.push('/emprestimos')}
+              >
+                <ArrowLeft />
+                Voltar
               </Button>
             </div>
           </div>

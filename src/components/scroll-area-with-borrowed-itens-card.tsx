@@ -1,5 +1,5 @@
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { ItemProps } from '@/app/area-particular/page'
+import { ItemProps } from '@/app/emprestimos/page'
 import { EmptyBox } from './empty-box'
 import { BorrowedCard } from './borrowed-card'
 
