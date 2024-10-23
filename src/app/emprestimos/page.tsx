@@ -4,6 +4,7 @@ import { TopBar } from '@/components/top-bar'
 import { createSupabaseServer } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { ToLoanClientButton } from './clientButton'
+import InstallBanner from '@/components/install-banner'
 
 export interface TableBorrowedItemsProps {
   id: string
@@ -105,6 +106,7 @@ export default async function Page() {
 
   return (
     <div className="flex flex-col min-h-screen">
+      <InstallBanner />
       <TopBar />
       <main>
         <div className="min-h-screen bg-background p-4 md:p-6">
