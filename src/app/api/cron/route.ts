@@ -58,7 +58,7 @@ function checkIfWasCreated3DaysAgo(createdAt: string) {
   return diffInDays >= 3
 }
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export async function GET(request: NextRequest): Promise<void | Response> {
   try {
@@ -126,6 +126,13 @@ export async function GET(request: NextRequest): Promise<void | Response> {
       (item) => item.sent_to,
     )
 
+    if (userIdsNeedingNotification.length === 0) {
+      return Response.json({
+        success: true,
+        message: 'without seding notification',
+      })
+    }
+
     const { data: subscriptionsNotParsed, error: subscriptionsError } =
       await supabaseAdmin
         .from('subscription')
@@ -176,7 +183,10 @@ export async function GET(request: NextRequest): Promise<void | Response> {
       }
     }
 
-    return Response.json({ success: true })
+    return Response.json({
+      success: true,
+      message: `uses notifyed ${userIdsNeedingNotification.join(', ')}`,
+    })
   } catch (error) {
     console.log(error)
     return Response.json({ success: false })

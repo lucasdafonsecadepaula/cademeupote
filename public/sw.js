@@ -19,5 +19,5 @@ self.addEventListener('notificationclick', function (event) {
   console.log('Notification click received.')
   event.notification.close()
   // eslint-disable-next-line no-undef
-  event.waitUntil(clients.openWindow('http://localhost:3000'))
+  event.waitUntil(clients.openWindow('https://cademeupote.vercel.app'))
 })
