@@ -230,7 +230,11 @@ export function ToLoanComponent() {
                 variant="outline"
                 className=""
                 disabled={isPending}
-                onClick={() => router.prefetch('/emprestimos')}
+                type="button"
+                onClick={() => {
+                  router.prefetch('/emprestimos')
+                  router.push('/emprestimos')
+                }}
               >
                 <ArrowLeft />
                 Voltar
@@ -287,7 +291,11 @@ export function ToLoanComponent() {
                 variant="outline"
                 className=""
                 disabled={isPending}
-                onClick={() => router.prefetch('/emprestimos')}
+                type="button"
+                onClick={() => {
+                  router.prefetch('/emprestimos')
+                  router.push('/emprestimos')
+                }}
               >
                 <ArrowLeft />
                 Voltar

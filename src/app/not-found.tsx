@@ -14,7 +14,12 @@ export default function Home() {
       <main className="h-[50vh] flex gap-4 flex-col items-center justify-center">
         <Image alt="Logo" className="aspect-square h-32 w-32" src={logoImage} />
         <p className="text-base font-bold">Pote não encontrado</p>
-        <Button onClick={() => router.push('/')}>
+        <Button
+          onClick={() => {
+            router.prefetch('/')
+            router.push('/')
+          }}
+        >
           Voltar para tela inicial
         </Button>
       </main>

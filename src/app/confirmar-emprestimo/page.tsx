@@ -9,6 +9,7 @@ import {
   getUser,
 } from '@/lib/supabase/queries'
 import { getUserMetadata } from '@/utils'
+import { GoToMainPage } from './GoToMainPage'
 
 export default async function Page({
   searchParams,
@@ -56,6 +57,7 @@ export default async function Page({
               ) : null
             }
           />
+          <GoToMainPage />
         </div>
       </main>
     </div>

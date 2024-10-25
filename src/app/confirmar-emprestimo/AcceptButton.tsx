@@ -23,7 +23,7 @@ export function AcceptButton({
   userName = '',
   userImageUrl = '',
 }: ClientProps) {
-  const { prefetch } = useRouter()
+  const router = useRouter()
   const supabase = createSupabaseClient()
   const [isPending, startTransition] = useTransition()
   const [hasError, setHasError] = useState(false)
@@ -45,7 +45,8 @@ export function AcceptButton({
           setHasError(false)
         }, 3000)
       } else {
-        prefetch('/')
+        router.prefetch('/')
+        router.push('/')
       }
     })
   }
