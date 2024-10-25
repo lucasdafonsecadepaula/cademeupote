@@ -31,7 +31,7 @@ export default function NotificationPermissionCard() {
   const [subscription, setSubscription] = useState<PushSubscription | null>(
     null,
   )
-  const [isIOS, setIsIOS] = useState(false)
+  const [, setIsIOS] = useState(false)
   const [, setIsStandalone] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
 
@@ -161,13 +161,6 @@ export default function NotificationPermissionCard() {
                   ? 'Bloquear as notificações faz com que você tenha uma experiência limitada.'
                   : 'Receba notificações e melhore sua experiência utilizando o app.'}
               </p>
-              {isIOS && (
-                <p>
-                  Para instalar este aplicativo no seu dispositivo iOS, toque no
-                  botão de compartilhamento e depois em &quot;Adicionar à tela
-                  inicial&quot;.
-                </p>
-              )}
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
