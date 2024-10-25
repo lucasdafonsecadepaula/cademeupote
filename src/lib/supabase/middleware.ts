@@ -1,8 +1,15 @@
 import { createServerClient } from '@supabase/ssr'
 import { type NextRequest, NextResponse } from 'next/server'
 
+const PROTECTED_ROUTES = ['/emprestimos', '/emprestar']
+
+function checkIfIsProtectedRoute(pathname: string) {
+  return PROTECTED_ROUTES.some((protectedRoute) =>
+    pathname.startsWith(protectedRoute),
+  )
+}
+
 export const updateSession = async (request: NextRequest) => {
-  // Create an unmodified response
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -32,12 +39,10 @@ export const updateSession = async (request: NextRequest) => {
     },
   )
 
-  // This will refresh session if expired - required for Server Components
-  // https://supabase.com/docs/guides/auth/server-side/nextjs
   const user = await supabase.auth.getUser()
 
   // protected routes
-  if (request.nextUrl.pathname.startsWith('/emprestimos') && user.error) {
+  if (checkIfIsProtectedRoute(request.nextUrl.pathname) && user.error) {
     return NextResponse.redirect(new URL('/', request.url))
   }
 

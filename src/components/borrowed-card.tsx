@@ -3,12 +3,12 @@ import { Badge } from '@/components/ui/badge'
 import Image from 'next/image'
 import { format, formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { ItemProps } from '@/app/emprestimos/page'
 import { TransactionInfo } from './transaction-info'
 import { MarkAsDeliveredButton } from './mark-as-delivered-button'
 import { ShareBorrowedItem } from './share-borrowed-item'
 import { CanShow } from './can-show'
 import { ReactNode } from 'react'
+import { IBorrowedItemSchema } from '@/lib/supabase/schemas'
 
 function ShowCreatedDate({
   iLended,
@@ -103,19 +103,19 @@ function BorrowedTextStatus({
   )
 }
 
-type BorrowedCardProps = ItemProps & { actionElement?: ReactNode }
+export type BorrowedCardProps = {
+  item: IBorrowedItemSchema
+  itemImageUrl: string
+  iLended: boolean
+  iBorrowed: boolean
+  actionElement?: ReactNode
+}
 
 export function BorrowedCard({
-  imageUrl,
-  name,
-  description,
+  item,
+  itemImageUrl,
   iLended,
   iBorrowed,
-  createdAt,
-  isPublic,
-  borrower,
-  lender,
-  id,
   actionElement,
 }: BorrowedCardProps) {
   return (
@@ -124,47 +124,60 @@ export function BorrowedCard({
         <div className="flex flex-col md:flex-row gap-6 relative">
           <div className="flex-shrink-0 flex items-center justify-center">
             <Image
-              src={imageUrl ?? ''}
-              alt={name}
+              src={itemImageUrl ?? ''}
+              alt={item.name}
               width={200}
               height={200}
               className="rounded-lg object-cover"
             />
           </div>
           <div className="flex flex-col justify-between flex-grow">
-            <CardTitle className="text-xl font-medium mb-2">{name}</CardTitle>
-            <p className="text-sm text-muted-foreground mb-4">{description}</p>
+            <CardTitle className="text-xl font-medium mb-2">
+              {item.name}
+            </CardTitle>
+            <p className="text-sm text-muted-foreground mb-4">
+              {item.description}
+            </p>
 
             <div className="flex items-center gap-2 mb-4">
               <ShowCreatedDate
                 iLended={iLended}
                 iBorrowed={iBorrowed}
-                createdAt={createdAt}
+                createdAt={item.created_at}
               />
 
-              <CustomBadge isPublic={isPublic} />
+              <CustomBadge isPublic={item.is_public} />
             </div>
             <div className="flex items-center justify-between flex-wrap gap-2">
               <BorrowedTextStatus
-                lenderName={lender.name}
-                borrowerName={borrower.name}
+                lenderName={item.lender_name}
+                borrowerName={item.borrower_name}
                 iLended={iLended}
                 iBorrowed={iBorrowed}
-                createdAt={createdAt}
+                createdAt={item.created_at}
               />
             </div>
 
-            <TransactionInfo lender={lender} borrower={borrower} />
+            <TransactionInfo
+              lender={{
+                name: item.lender_name,
+                imageUrl: item.lender_image_url,
+              }}
+              borrower={{
+                name: item.borrower_name,
+                imageUrl: item.borrower_image_url,
+              }}
+            />
 
             {actionElement}
 
             <CanShow isShowing={iLended}>
               <div className="flex justify-between items-end mt-8 flex-wrap-reverse gap-3">
                 <div>
-                  <MarkAsDeliveredButton id={id} />
+                  <MarkAsDeliveredButton id={item.id} />
                 </div>
                 <div>
-                  <ShareBorrowedItem id={id} />
+                  <ShareBorrowedItem id={item.id} />
                 </div>
               </div>
             </CanShow>

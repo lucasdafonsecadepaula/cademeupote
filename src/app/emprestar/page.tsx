@@ -1,15 +1,14 @@
 import NotificationPermissionCard from '@/components/notification-permission-card'
 import { ToLoanComponent } from '@/components/to-loan-component'
 import { TopBar } from '@/components/top-bar'
+import { getUser } from '@/lib/supabase/queries'
 import { createSupabaseServer } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
 export default async function Page() {
   const supabase = createSupabaseServer()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getUser(supabase)
 
   if (!user) {
     return redirect('/')

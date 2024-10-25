@@ -1,64 +1,39 @@
 import { TopBar } from '@/components/top-bar'
 import { createSupabaseServer } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { TableBorrowedItemsProps } from '../emprestimos/page'
 import { AcceptButton } from './AcceptButton'
 import { BorrowedCard } from '@/components/borrowed-card'
+import {
+  getBorrowedItemByToken,
+  getStorageImage,
+  getUser,
+} from '@/lib/supabase/queries'
+import { getUserMetadata } from '@/utils'
 
 export default async function Page({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
+  if (!searchParams.token) return redirect('/')
+
   const supabase = createSupabaseServer()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!searchParams.token) {
-    return redirect('/')
-  }
-
+  const user = await getUser(supabase)
   const token = searchParams.token as string
 
-  const { data: dataItem } = (await supabase
-    .from('borrowed_items')
-    .select('*')
-    .eq('id', token)
-    .single()
-    .setHeader('token', token)) as { data: TableBorrowedItemsProps }
+  const [item, error] = await getBorrowedItemByToken(supabase, token)
 
-  if (!dataItem) return <>ERROR</>
+  if (error || !item) return redirect('/')
 
-  const { data: dataImage } = await supabase.storage
-    .from('Items Emprestados')
-    .createSignedUrl(dataItem.image_name, 60 * 60)
+  const imageName = item.image_name ?? ''
 
-  const iLended = user ? user.id === dataItem.created_by : false
-  const iBorrowed = user ? user.id === dataItem.sent_to : false
+  const [imageSignedUrl, erro] = await getStorageImage(supabase, imageName)
+  if (erro) console.log('getStorageImage ', erro)
 
-  const cardProps = {
-    id: dataItem.id,
-    iLended,
-    iBorrowed,
-    name: dataItem.name,
-    description: dataItem.description,
-    imageUrl: dataImage?.signedUrl ?? '',
-    createdAt: dataItem.created_at,
-    createdBy: dataItem.created_by,
-    isPublic: dataItem.is_public,
-    lender: { name: dataItem.lender_name, imageUrl: dataItem.lender_image_url },
-    borrower: {
-      name: dataItem.borrower_name,
-      imageUrl: dataItem.borrower_image_url,
-    },
-  }
+  const iLended = user ? user.id === item.created_by : false
+  const iBorrowed = user ? user.id === item.sent_to : false
 
-  const userName = user?.user_metadata?.name as string | undefined
-  const userImageUrl = user?.user_metadata?.avatar_url as string | undefined
-
-  console.log('aki', dataItem.sent_to)
+  const { name, avatarUrl } = getUserMetadata(user)
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -66,14 +41,17 @@ export default async function Page({
       <main className="h-[calc(100vh-180px)] flex items-center bg-background p-4 md:p-6">
         <div className="max-w-4xl mx-auto space-y-4">
           <BorrowedCard
-            {...cardProps}
+            item={item}
+            itemImageUrl={imageSignedUrl ?? ''}
+            iLended={iLended}
+            iBorrowed={iBorrowed}
             actionElement={
-              !dataItem.sent_to ? (
+              !item.sent_to ? (
                 <AcceptButton
                   userId={user?.id}
                   token={token}
-                  userName={userName}
-                  userImageUrl={userImageUrl}
+                  userName={name}
+                  userImageUrl={avatarUrl}
                 />
               ) : null
             }

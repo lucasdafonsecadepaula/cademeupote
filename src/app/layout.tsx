@@ -1,6 +1,7 @@
 import { Poppins } from 'next/font/google'
 import type { Metadata } from 'next'
 import './globals.css'
+import { DEFAULT_URL } from '@/config'
 
 const poppinsFont = Poppins({
   subsets: ['latin'],
@@ -8,20 +9,11 @@ const poppinsFont = Poppins({
   variable: '--font-poppins',
 })
 
-// const robotoFont = Roboto({
-//   subsets: ['latin'],
-//   weight: ['400', '500', '700'],
-//   variable: '--font-roboto',
-// })
-
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:3000'
-
 export const metadata: Metadata = {
-  metadataBase: new URL(defaultUrl),
+  metadataBase: new URL(DEFAULT_URL),
   title: 'CadêMeuPote?',
-  description: 'O melhor jeito para lembrar alguem a devolver o seus potes!',
+  description:
+    'A maneira mais divertida e eficiente de lembrar seus amigos ou familiares a devolver seus potes!',
   keywords: 'Empréstimo, pote, aplicativo para mães',
   openGraph: {
     images: '/images/og-image.png',

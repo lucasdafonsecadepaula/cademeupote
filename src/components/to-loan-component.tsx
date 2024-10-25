@@ -7,6 +7,7 @@ import {
   Check,
   LoaderPinwheel,
   ArrowLeft,
+  AlertCircle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,11 +17,12 @@ import { Checkbox } from '@/components/ui/checkbox'
 import Image from 'next/image'
 import whatsappIcon from '@/assets/svgs/whatsapp.svg'
 import { ChangeEvent, useRef, useState, useTransition } from 'react'
-import { convertBlobUrlToFile } from '@/utils'
+import { convertBlobUrlToFile, getUserMetadata } from '@/utils'
 import { uploadImage } from '@/lib/supabase/storage/client'
 import { createSupabaseClient } from '@/lib/supabase/client'
-import { BUCKET_NAME } from '@/config'
 import { useRouter } from 'next/navigation'
+import { getUser, insertBorrowedItem } from '@/lib/supabase/queries'
+import { Alert, AlertDescription, AlertTitle } from './ui/alert'
 
 export function ToLoanComponent() {
   const supabase = createSupabaseClient()
@@ -36,44 +38,68 @@ export function ToLoanComponent() {
   })
   const [sharedLink, setSharedLink] = useState('')
   const [isPending, startTransition] = useTransition()
+  const [hasError, setHasError] = useState(false)
 
   async function handleCreateProduct(e: React.FormEvent) {
     e.preventDefault()
+
     startTransition(async () => {
       const { name, description, image, isPublic } = newProduct
-      if (!name || !description || !image) return
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
+      const user = await getUser(supabase)
       if (!user) return
 
-      const imageFile = await convertBlobUrlToFile(image)
+      const metadata = getUserMetadata(user)
 
-      const { data, error } = await uploadImage({
-        file: imageFile,
-        bucket: BUCKET_NAME,
+      const [item, errorItem] = await insertBorrowedItem(supabase, {
+        description,
+        // imageName: imagePath,
+        isPublic,
+        lenderImageUrl: metadata.avatarUrl,
+        lenderName: metadata.name,
+        name,
       })
 
-      if (error || data === undefined) {
-        console.error(error)
+      if (errorItem) {
+        console.error(errorItem)
+        setHasError(true)
+
+        setTimeout(() => {
+          setHasError(false)
+        }, 3000)
         return
       }
 
-      const { data: item, error: errorItem } = await supabase
-        .from('borrowed_items')
-        .insert({
-          name,
-          description,
-          is_public: isPublic,
-          image_name: data.path,
-          lender_name: user.user_metadata?.name ?? '',
-          lender_image_url: user.user_metadata?.avatar_url ?? '',
+      let imagePath = ''
+      if (image) {
+        const imageFile = await convertBlobUrlToFile(image)
+        const [storageImg, storageImgError] = await uploadImage(supabase, {
+          file: imageFile,
+          itemId: item.id,
+          userId: user.id,
         })
-        .select()
-        .single()
+        if (storageImgError) {
+          await supabase.from('borrowed_items').delete().eq('id', item.id)
+
+          setHasError(true)
+          console.error(storageImgError)
+          setTimeout(() => {
+            setHasError(false)
+          }, 3000)
+          return
+        }
+        imagePath = storageImg?.path ?? ''
+
+        await supabase
+          .from('borrowed_items')
+          .update({
+            image_name: imagePath,
+          })
+          .eq('id', item.id)
+          .single()
+      }
+
       setSharedLink(`${window.origin}/confirmar-emprestimo?token=${item.id}`)
       setStep((prev) => prev + 1)
-      console.error(errorItem)
     })
   }
 
@@ -90,8 +116,8 @@ export function ToLoanComponent() {
     setNewProduct((prev) => ({ ...prev, image: newImageObjectURL }))
   }
 
-  function copyToClipboard(text: string) {
-    navigator.clipboard.writeText(text).then(() => {
+  function copyToClipboard() {
+    navigator.clipboard.writeText(sharedLink).then(() => {
       setIsCopied(true)
       setTimeout(() => setIsCopied(false), 2000)
     })
@@ -105,6 +131,14 @@ export function ToLoanComponent() {
 
   return (
     <div>
+      {hasError ? (
+        <Alert variant="destructive" className="max-w-md mx-auto mt-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Ocorreu algum erro</AlertTitle>
+          <AlertDescription>Tente novamente</AlertDescription>
+        </Alert>
+      ) : null}
+
       {step === 1 ? (
         <>
           <div>
@@ -196,7 +230,7 @@ export function ToLoanComponent() {
                 variant="outline"
                 className=""
                 disabled={isPending}
-                onClick={() => router.push('/emprestimos')}
+                onClick={() => router.prefetch('/emprestimos')}
               >
                 <ArrowLeft />
                 Voltar
@@ -230,11 +264,7 @@ export function ToLoanComponent() {
           <div className="space-y-4">
             <div className="flex items-center space-x-2 w-full">
               <Input value={sharedLink} readOnly />
-              <Button
-                size="icon"
-                variant="outline"
-                onClick={() => copyToClipboard(sharedLink)}
-              >
+              <Button size="icon" variant="outline" onClick={copyToClipboard}>
                 {copied ? (
                   <Check className="h-4 w-4" />
                 ) : (
@@ -257,7 +287,7 @@ export function ToLoanComponent() {
                 variant="outline"
                 className=""
                 disabled={isPending}
-                onClick={() => router.push('/emprestimos')}
+                onClick={() => router.prefetch('/emprestimos')}
               >
                 <ArrowLeft />
                 Voltar

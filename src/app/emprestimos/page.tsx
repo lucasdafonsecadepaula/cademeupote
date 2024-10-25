@@ -5,104 +5,37 @@ import { createSupabaseServer } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { ToLoanClientButton } from './clientButton'
 import InstallBanner from '@/components/install-banner'
-
-export interface TableBorrowedItemsProps {
-  id: string
-  created_at: string
-  name: string
-  description?: string
-  created_by: string
-  sent_to?: null | string
-  is_public: boolean
-  has_returned: boolean
-  image_name: string
-  lender_name: string
-  lender_image_url: string
-  borrower_name?: null | string
-  borrower_image_url?: null | string
-}
-
-export interface ItemProps {
-  id: string
-  createdAt: string
-  name: string
-  description?: string
-  createdBy: string
-  sentTo?: null | string
-  isPublic: boolean
-  imageUrl?: string | null
-  iLended: boolean
-  iBorrowed: boolean
-  lender: {
-    name: string
-    imageUrl: string
-  }
-  borrower: {
-    name?: null | string
-    imageUrl?: null | string
-  }
-}
+import {
+  getMyBorrowedItems,
+  getStorageImagesByName,
+  getUser,
+} from '@/lib/supabase/queries'
 
 export default async function Page() {
   const supabase = createSupabaseServer()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getUser(supabase)
 
   if (!user) {
     return redirect('/')
   }
 
-  const { data: itemsData, error } = await supabase
-    .from('borrowed_items')
-    .select('*')
-    .eq('has_returned', false)
-    .order('created_at', { ascending: true })
+  const [items, error] = await getMyBorrowedItems(supabase)
 
-  const items = (itemsData ?? []) as TableBorrowedItemsProps[]
+  if (error) return redirect('/')
 
-  const signedUrls = await Promise.all(
-    items.map(async (item) => {
-      const { data, error } = await supabase.storage
-        .from('Items Emprestados')
-        .createSignedUrl(item.image_name, 60 * 60) // 1 hour expiration
+  const imageNames = items
+    .filter((e) => !!e.image_name)
+    .map((e) => e.image_name) as string[]
 
-      if (error) {
-        console.error(
-          `Error generating signed URL for ${item.image_name}:`,
-          error,
-        )
-        return null // Handle error as needed
-      }
-      return data.signedUrl
-    }),
-  )
+  const [signedUrls] = await getStorageImagesByName(supabase, imageNames)
 
-  const newItems = items.map((e, i) => ({
-    id: e.id,
-    createdAt: e.created_at,
-    name: e.name,
-    description: e.description,
-    createdBy: e.created_by,
-    sentTo: e.sent_to,
-    isPublic: e.is_public,
-    imageUrl: signedUrls[i],
+  const cards = items.map((e, i) => ({
+    item: e,
+    itemImageUrl: signedUrls[i] ?? '',
     iLended: user.id === e.created_by,
     iBorrowed: user.id === e.sent_to,
-    lender: {
-      name: e.lender_name,
-      imageUrl: e.lender_image_url,
-    },
-    borrower: {
-      name: e.borrower_name,
-      imageUrl: e.borrower_image_url,
-    },
-  })) as ItemProps[]
-
-  if (error) {
-    return <>ERRO</>
-  }
+  }))
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -112,7 +45,7 @@ export default async function Page() {
         <div className="min-h-screen bg-background p-4 md:p-6">
           <div className="max-w-4xl mx-auto space-y-4">
             <h1 className="text-2xl font-bold text-center mb-6">Empréstimo</h1>
-            <ScrollAreaWithBorrowedItemsCard items={newItems} />
+            <ScrollAreaWithBorrowedItemsCard cards={cards} />
             <ToLoanClientButton />
           </div>
         </div>

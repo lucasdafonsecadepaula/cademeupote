@@ -8,6 +8,7 @@ import Image from 'next/image'
 import logoImage from '@/assets/imgs/logo.png'
 import { createSupabaseClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { getUser } from '@/lib/supabase/queries'
 
 export function TopBar() {
   const supabase = createSupabaseClient()
@@ -19,9 +20,7 @@ export function TopBar() {
 
   useEffect(() => {
     async function checkLogin() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
+      const user = await getUser(supabase)
 
       if (!user) {
         setIsLoggedIn(false)
@@ -33,7 +32,7 @@ export function TopBar() {
     }
 
     checkLogin()
-  }, [supabase.auth])
+  }, [supabase])
 
   function refreshPage() {
     router.refresh()

@@ -1,64 +1,40 @@
 'use server'
 
+import {
+  getUser,
+  subscribeQuery,
+  unsubscribeQuery,
+} from '@/lib/supabase/queries'
+import { DeviceSubscriptionSchema } from '@/lib/supabase/schemas'
 import { createSupabaseServer } from '@/lib/supabase/server'
-import webpush from 'web-push'
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : 'mailto:example@yourdomain.org'
+export async function subscribeUser(body: PushSubscription) {
+  const { data: sub, error: errorParseSub } =
+    DeviceSubscriptionSchema.safeParse(body)
+  if (errorParseSub) return { success: false, message: errorParseSub.message }
 
-webpush.setVapidDetails(
-  defaultUrl,
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!,
-)
+  const supabase = createSupabaseServer()
+  const user = await getUser(supabase)
+  if (!user) return { success: false, message: 'Not Authenticated' }
 
-export async function subscribeUser(sub: PushSubscription) {
-  try {
-    const supabase = createSupabaseServer()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+  const { error } = await subscribeQuery(supabase, {
+    user,
+    sub: JSON.stringify(sub),
+  })
+  if (error) return { success: false, message: error.message }
 
-    if (!user) return { success: false, message: 'Not Authenticated' }
-
-    const { error } = await supabase
-      .from('subscription')
-      .upsert({ sub: JSON.stringify(sub), is_active: true })
-      .eq('id', user.id)
-
-    if (error) {
-      return { success: false, message: error.message }
-    }
-
-    return { success: true }
-  } catch (error) {
-    console.error('subscribeUser', error)
-    return { success: false, message: 'Unknow error' }
-  }
+  return { success: true }
 }
 
 export async function unsubscribeUser() {
-  try {
-    const supabase = createSupabaseServer()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+  const supabase = createSupabaseServer()
+  const user = await getUser(supabase)
+  if (!user) return { success: false, message: 'Not Authenticated' }
 
-    if (!user) return { success: false, message: 'Not Authenticated' }
+  const { error } = await unsubscribeQuery(supabase, {
+    user,
+  })
+  if (error) return { success: false, message: error.message }
 
-    const { error } = await supabase
-      .from('subscription')
-      .update({ sub: '', is_active: false })
-      .eq('id', user.id)
-
-    if (error) {
-      return { success: false, message: error.message }
-    }
-
-    return { success: true }
-  } catch (error) {
-    console.error('subscribeUser', error)
-    return { success: false, message: 'Unknow error' }
-  }
+  return { success: true }
 }

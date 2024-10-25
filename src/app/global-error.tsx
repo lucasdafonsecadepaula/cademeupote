@@ -14,8 +14,6 @@ export default function GlobalError({
     <html>
       <body>
         <TopBar />
-        <h2>Something went wrong!</h2>
-        <button>Try again</button>
         <main className="min-h-screen flex flex-col items-center justify-center">
           <Image
             alt="Logo"

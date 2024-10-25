@@ -1,7 +1,12 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 /supabase/
+/.vscode
 .vscode
+/.*
 settings.json
+/test-results
+/playwright
+supabase.local.env
 
 # dependencies
 /node_modules

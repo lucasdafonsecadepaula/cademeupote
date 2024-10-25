@@ -11,20 +11,19 @@ export interface Database {
     Tables: {
       borrowed_items: {
         Row: {
-          // the data expected from .select()
           id: string
           created_at: string
           name: string
-          description: string
+          description?: string
           created_by: string
-          sent_to: null | string
+          sent_to?: null | string
           is_public: boolean
           has_returned: boolean
-          image_name: string
+          image_name?: null | string
           lender_name: string
           lender_image_url: string
-          borrower_name: string
-          borrower_image_url: string
+          borrower_name?: null | string
+          borrower_image_url?: null | string
         }
         Insert: {
           // the data to be passed to .insert()
